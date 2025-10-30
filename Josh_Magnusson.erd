@@ -1,13 +1,17 @@
+```erdiagram
 erdiagram UniversityModel
+
 notation=crowsfoot
+
 
 entity Student {
     student_id: INTEGER key
     name: VARCHAR(100)
     email: VARCHAR(100)
-    major: VARCHAR(50)
+    department_id: VARCHAR(10)
     year: INTEGER
 }
+
 
 entity Course {
     course_id: VARCHAR(10) key
@@ -43,6 +47,11 @@ relationship StudentEnrollment {
 }
 
 
+relationship CourseEnrollment {
+    Course[1 | "course"] -> Enrollment[0..N | "enrollment"]
+}
+
+
 
 relationship CourseInstructor {
     Course[0..N | "course"] -> Instructor[1 | "instructor"]
@@ -55,3 +64,17 @@ relationship CourseDepartment {
 relationship InstructorDepartment {
     Instructor[0..N | "instructor"] -> Department[1 | "department"]
 }
+
+/* Additional business-rule relationships and notes
+   - Students belong to exactly one Department (their major). Modeled via Department -> Student (1 to 0..N).
+   - Enrollment links Students and Courses (many-to-many). Each Enrollment record belongs to one Student and one Course.
+   - Consider enforcing uniqueness on Enrollment: (student_id, course_id, semester) to prevent duplicate enrollments in the same offering.
+   - Emails for Student and Instructor should be unique. Many ERD text formats support comments only; enforce in DB migration.
+*/
+
+relationship DepartmentStudent {
+    Department[1 | "department"] -> Student[0..N | "student"]
+}
+
+
+```
